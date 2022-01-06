@@ -109,7 +109,9 @@ class Matrix
         friend Matrix Trans(const Matrix &M);
         friend Matrix Inv_LU(const Matrix &M); 
         friend Matrix Inv_QR(const Matrix &M);
+        friend Matrix LUinv(const Matrix &M);
         friend double Norm(const Matrix &M);
+        friend bool Is_L(const Matrix &M);
         Matrix slice(int r1,int r2,int c1,int c2)const;
         friend std::ostream& operator<<(std::ostream &os,const Matrix &V);
 

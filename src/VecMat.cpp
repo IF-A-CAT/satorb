@@ -408,7 +408,7 @@ Matrix Matrix::slice(int r1,int r2,int c1,int c2)const {
 
 double Norm(const Matrix &M){
     if(M.c!=1){
-        cerr<<"ERROR:Matrix's column is not 1,Norm fial"<<endl;
+        cerr<<"ERROR:Matrix's column is not 1,Norm fail"<<endl;
         exit(1);
     }
     double norm=0;
@@ -418,9 +418,49 @@ double Norm(const Matrix &M){
     return sqrt(norm);
 }
 
-// Matrix Inv_LU(const Matrix &M){
+Matrix Inv_LU(const Matrix &M){         
+    if(M.r!=M.c){
+        cerr<<"ERROR:Input matrix is not a square matrix in Inv_LU"<<endl;
+        exit(1);
+    }
+    int n=M.r;
+    double max=0.0;
+    for(int i=0;i<n;i++){                                          
+        for(int j=0;j<n;j++){
+            if(fabs(M(i,j))>max)    max=fabs(M(i,j));
+        }
+        if(max==0.0){
+            cerr<<"ERROR:Singular matrix in Inv_LU"<<endl;
+            exit(1);
+        }
+    }
+     
+    Matrix L(n,n),U(n,n);
+    int k,i,j,m;
+    double sum;
+    L=Eye(n);
+    for(k=0;k<n;k++){                                    //LU_decompose:start
+        for(j=k;j<n;j++){
+            sum=0.0;
+            for(m=0;m<=k-1;m++)
+                sum+=L(k,m)*U(m,j);
+            U(k,j)=M(k,j)-sum;
+        }
+        for(i=k+1;i<n;i++){                             //采用待定系数法求解先求U，然后根据求解的一行U计算L的一列
+            sum=0.0;                                    //由此迭代求解，前提为L矩阵的正对角线元素都为1.
+            for(m=0;m<=k-1;m++){
+                sum+=L(i,m)*U(m,k);
+            }
+            L(i,k)=(M(i,k)-sum)/U(k,k);
+        }
+    }                                                   //LU_decompose::end
+    L=LUinv(L);U=LUinv(U);
+    L=U*L;
+    return L;
+}
 
-// }
+
+
 Matrix* QR_decompose(const Matrix &M){
     int r=M.r,c=M.c;
     double norm;
@@ -440,7 +480,7 @@ Matrix* QR_decompose(const Matrix &M){
         Aux=M1.slice(i,r-1,i,i);
         norm=Norm(Aux);
         if(norm<eps){
-            cerr<<"ERROR:The matrix is not column full rank,or the square matrix is singular"<<endl;
+            cerr<<"ERROR:The matrix is not column full rank,or the square matrix is singular in QR_decompose"<<endl;
             exit(1);
         }
         // cout<<Aux;
@@ -471,10 +511,68 @@ Matrix* QR_decompose(const Matrix &M){
     return QR;
    
 }
-// Matrix Inv_QR(const Matrix &M){
-    // if(M.c!=M.r){
-        // cerr<<"ERROR:Matrix is not a square matrix"<<endl;
-        // exit(1);
-    // }
- 
-// }
+Matrix Inv_QR(const Matrix &M){
+    if(M.c!=M.r){
+        cerr<<"ERROR:Matrix is not a square matrix in Inv_QR"<<endl;
+        exit(1);
+    }
+    Matrix* QR;
+    QR=QR_decompose(M);
+    Matrix Inv(M.r,M.c);
+    Inv=LUinv(QR[1]);
+    Inv=Inv*Trans(QR[0]);
+    delete [] QR;
+    return Inv;
+
+}
+
+Matrix LUinv(const Matrix &M){
+    int r=M.r,c=M.c,i,j,k;
+    if(Is_L(M)){
+        Matrix L_inv(r,c);
+        for(i=0;i<r;i++){
+            for(j=0;j<c;j++){
+                if(i<j) L_inv(i,j)=0;
+                else if(i==j)    L_inv(i,j)=1/M(i,i);
+                else{
+                    for(k=j;k<i;k++){
+                        L_inv(i,j)+=(-1/M(i,i))*M(i,k)*L_inv(k,j);
+                    }
+                }
+            }
+        }
+        return L_inv;
+    }
+    else{
+        Matrix U_inv(r,c),Mt(Trans(M));
+        for(i=0;i<r;i++){
+            for(j=0;j<c;j++){
+                if(i<j) {
+                    U_inv(i,j)=0;}
+                else if(i==j){   
+                    U_inv(i,j)=1/Mt(i,i);}
+                else{
+                    for(k=j;k<i;k++){
+                        U_inv(i,j)+=(-1/Mt(i,i))*Mt(i,k)*U_inv(k,j);
+                    }
+                }
+            }
+        }
+        return Trans(U_inv);
+    }
+}
+
+bool Is_L(const Matrix &M){
+    int i,j;
+    bool LU=true;
+    for(j=1;j<M.c;j++){
+        for(i=0;i<j;i++){
+            if(M(i,j)>eps)  
+                LU=false;
+                break;
+        }        
+        if(LU==false) break;
+    }
+    return LU;
+}
+
