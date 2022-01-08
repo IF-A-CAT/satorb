@@ -151,6 +151,7 @@ ostream& operator<<(ostream &os,const Vector &V){
 
 Matrix::Matrix():r(0),c(0){
     M=new double *[1];
+    M[0][0]=0.0;
 }
 
 Matrix::Matrix(int R,int C):r(R),c(C){
@@ -577,30 +578,31 @@ bool Is_L(const Matrix &M){
 }
 
 
-Matrix Rx(const double &alpha){
+Matrix R_x(double alpha){
     double rx[9]={1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0};
     rx[4]=cos(alpha);rx[5]=sin(alpha);
     rx[7]=-sin(alpha);rx[8]=cos(alpha);
-    Matrix Rx(rx,3,3);
-    return Rx;
+    Matrix a(rx,3,3);
+    return a;
 }
 
-Matrix Ry(const double &alpha){
+Matrix R_y(double alpha){
     double ry[9]={1.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0};
     ry[0]=cos(alpha);
     ry[2]=-sin(alpha);
     ry[6]=sin(alpha);
     ry[8]=cos(alpha);
-    Matrix Ry(ry,3,3);
-    return Ry;
+    Matrix b(ry,3,3);
+    return b;
 }
 
-Matrix Rz(const double &alpha){
+Matrix R_z(double alpha){
     double rz[9]={1.0,1.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0};
     rz[0]=cos(alpha);
     rz[1]=sin(alpha);
     rz[3]=-sin(alpha);
     rz[4]=cos(alpha);
-    Matrix Rz(rz,3,3);
-    return Rz;
+    Matrix c(rz,3,3);
+    return c;
 }
+

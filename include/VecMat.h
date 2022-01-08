@@ -1,5 +1,7 @@
 #pragma once 
 
+#ifndef _VECMAT_H
+#define _VECMAT_H
 //This for matrix calculation
 
 // #include<iostream>
@@ -92,7 +94,7 @@ class Matrix
         friend Matrix operator*(const Matrix & M1,const Matrix &M2);
         friend Matrix operator*(const Matrix & M,const Vector &V);
         friend Matrix operator*(const Vector & V,const Matrix &M);
-        
+
         friend Matrix* QR_decompose(const Matrix &M);
         friend Matrix operator/(const Matrix &M,const double &value);
 
@@ -113,12 +115,13 @@ class Matrix
         friend bool Is_L(const Matrix &M);
         Matrix slice(int r1,int r2,int c1,int c2)const;
         friend std::ostream& operator<<(std::ostream &os,const Matrix &V);
-        friend Matrix Rx(const double &alpha);
-        friend Matrix Ry(const double &alpha);
-        friend Matrix Rz(const double &alpha);
+        friend Matrix R_x( double alpha);
+        friend Matrix R_y( double alpha);
+        friend Matrix R_z( double alpha);
 
     private:
         double **M;
         int r;
         int c;
 };
+#endif
