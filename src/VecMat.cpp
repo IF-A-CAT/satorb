@@ -576,3 +576,31 @@ bool Is_L(const Matrix &M){
     return LU;
 }
 
+
+Matrix Rx(const double &alpha){
+    double rx[9]={1.0,0.0,0.0,0.0,1.0,1.0,0.0,1.0,1.0};
+    rx[4]=cos(alpha);rx[5]=sin(alpha);
+    rx[7]=-sin(alpha);rx[8]=cos(alpha);
+    Matrix Rx(rx,3,3);
+    return Rx;
+}
+
+Matrix Ry(const double &alpha){
+    double ry[9]={1.0,0.0,1.0,0.0,1.0,0.0,1.0,0.0,1.0};
+    ry[0]=cos(alpha);
+    ry[2]=-sin(alpha);
+    ry[6]=sin(alpha);
+    ry[8]=cos(alpha);
+    Matrix Ry(ry,3,3);
+    return Ry;
+}
+
+Matrix Rz(const double &alpha){
+    double rz[9]={1.0,1.0,0.0,1.0,1.0,0.0,0.0,0.0,1.0};
+    rz[0]=cos(alpha);
+    rz[1]=sin(alpha);
+    rz[3]=-sin(alpha);
+    rz[4]=cos(alpha);
+    Matrix Rz(rz,3,3);
+    return Rz;
+}
