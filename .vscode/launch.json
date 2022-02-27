@@ -9,9 +9,9 @@
         ""
       ],
       "stopAtEntry": false,
-      "cwd": "e:/Code/C++/VetMat",
+      "cwd": "e:/Code/C++/Rtorb",
       "environment": [],
-      "program": "e:/Code/C++/VetMat/main.exe",
+      "program": "e:/Code/C++/Rtorb/main.exe",
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "gdb",
       "miDebuggerPath": "D:/mingw/mingw64/bin/gdb.exe",

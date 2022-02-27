@@ -10,8 +10,8 @@
 				"-I",
 				"include",
 				"-g",
-				"${workspaceFolder}\\*.cpp",
 				"${workspaceFolder}\\src\\*.cpp",
+				"${workspaceFolder}\\*.cpp",
 				"-o",
 				"${fileDirname}\\${fileBasenameNoExtension}.exe"
 			],

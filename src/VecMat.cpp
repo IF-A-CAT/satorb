@@ -8,6 +8,10 @@ Vector::Vector():n(0){};
 
 Vector::Vector(int i):n(i){
     V=new double [n];
+    for(int j=0;j<i;j++)
+    {
+        V[j]=0.0;
+    }
 };
 
 Vector::Vector(double *v,int n):n(n){
@@ -150,8 +154,7 @@ ostream& operator<<(ostream &os,const Vector &V){
 }
 
 Matrix::Matrix():r(0),c(0){
-    M=new double *[1];
-    M[0][0]=0.0;
+    M=new double *[1]; 
 }
 
 Matrix::Matrix(int R,int C):r(R),c(C){
@@ -160,7 +163,7 @@ Matrix::Matrix(int R,int C):r(R),c(C){
     for(i=0;i<r;i++)    M[i]=new double [c];
     for(i=0;i<r;i++){
         for(j=0;j<c;j++)
-            M[i][j]=0;
+            M[i][j]=0.0;
     }
 }
 Matrix::Matrix(const Matrix &M1):c(M1.c),r(M1.r){
@@ -202,6 +205,8 @@ Matrix& Matrix::operator=(const double &value){
 }
 
 Matrix::~Matrix(){
+    for(int i=0;i<r;i++)
+        delete [] M[i];
     delete [] M;
 }
 
@@ -351,6 +356,9 @@ Matrix operator/(const Matrix &M,const double &value){
 }
 
 Matrix& Matrix::operator=(const Matrix &M1){
+    for(int i=0;i<r;i++)
+        delete [] M[i];
+    delete [] M;
     r=M1.r;
     c=M1.c;
     M=new double*[r];
@@ -367,22 +375,16 @@ ostream& operator<<(ostream &os,const Matrix &M){
     for(int i=0;i<M.r;i++){
         for(int j=0;j<M.c;j++)
             if(j!=M.c-1){
-                os<<setw(12)<<M(i,j)<<',';
+                os<<fixed<<setprecision(4)<<setw(10)<<M(i,j)<<' ';
             }
             else{
-                os<<setw(12)<<M(i,j)<<endl;
+                os<<fixed<<setprecision(4)<<setw(10)<<M(i,j)<<endl;
             }
     }
     return os;
 }
 
-Matrix Eye(int n){
-    Matrix eye(n,n);
-    for(int i=0;i<n;i++){
-        eye(i,i)=1;
-    }
-    return eye;
-}
+
 
 Matrix Trans(const Matrix &M){
     Matrix M1(M.c,M.r);
@@ -430,7 +432,7 @@ Matrix Inv_LU(const Matrix &M){
         for(int j=0;j<n;j++){
             if(fabs(M(i,j))>max)    max=fabs(M(i,j));
         }
-        if(max==0.0){
+        if(max<eps){
             cerr<<"ERROR:Singular matrix in Inv_LU"<<endl;
             exit(1);
         }
@@ -454,12 +456,59 @@ Matrix Inv_LU(const Matrix &M){
             }
             L(i,k)=(M(i,k)-sum)/U(k,k);
         }
-    }                                                   //LU_decompose::end
+    }                                                     //LU_decompose::end
     L=LUinv(L);U=LUinv(U);
+    // cout<<''
     L=U*L;
+    for(i=0;i<M.r;i++)
+        {
+            for(j=0;j<M.c;j++)
+            {
+                if(isnan(L(i,j)))
+                {
+                    cerr<<"ERROR:Matrix is almost a singular matrix !"<<endl;
+                }
+            }
+        }
     return L;
 }
 
+Matrix Cholesky(const Matrix &M)                                //for cholesky-decompose in Pxx
+{
+    int col=M.c,row=M.r;
+    if(col!=row)
+    {
+        cerr<<"ERROR:Matrix is not square"<<endl;
+        exit(1); 
+    }
+    Matrix L(row,col);
+    double sum=0.0;
+    // for(int i=0;i<r;i++)       
+    // {
+    //     if(i==0)
+    //     {
+    //         L(i,0)=sqrt(M(0,0));
+    //     }
+    //     else
+    //     {
+    //         L(i,0)=M(i,0)/L(0,0);
+    //     }
+    // }
+
+    for(int k=0;k<row;k++)
+    {   sum=0.0;
+        for(int i=0;i<=k-1;i++)
+            sum+=L(k,i)*L(k,i);
+        L(k,k)=sqrt(M(k,k)-sum);
+        for(int i=0;i<col;i++)
+        {   sum=0.0;
+            for(int j=0;j<=k-1;j++)
+                sum+=L(i,j)*L(k,j);
+            L(i,k)=(M(i,k)-sum)/L(k,k);
+        }
+    }
+    return L;
+}
 
 
 Matrix* QR_decompose(const Matrix &M){
@@ -481,7 +530,7 @@ Matrix* QR_decompose(const Matrix &M){
         Aux=M1.slice(i,r-1,i,i);
         norm=Norm(Aux);
         if(norm<eps){
-            cerr<<"ERROR:The matrix is not column full rank,or the square matrix is singular in QR_decompose"<<endl;
+            cerr<<"ERROR:The matrix is not column full rank,or the square matrix is singular"<<endl;
             exit(1);
         }
         // cout<<Aux;
@@ -509,10 +558,9 @@ Matrix* QR_decompose(const Matrix &M){
     }
     QR[0]=Trans(QR[0]);
     QR[1]=M1;
-    return QR;
-   
-}
-Matrix Inv_QR(const Matrix &M){
+    return QR;}
+
+Matrix Inv_QR(const Matrix &M){                                 //if you want to solve the inv-problem you'd better us Inv_LU
     if(M.c!=M.r){
         cerr<<"ERROR:Matrix is not a square matrix in Inv_QR"<<endl;
         exit(1);
@@ -521,15 +569,34 @@ Matrix Inv_QR(const Matrix &M){
     QR=QR_decompose(M);
     Matrix Inv(M.r,M.c);
     Inv=LUinv(QR[1]);
+    // cout<<QR[1]<<'\n'<<Inv<<endl;
     Inv=Inv*Trans(QR[0]);
     delete [] QR;
     return Inv;
-
 }
 
-Matrix LUinv(const Matrix &M){
+Matrix LUinv(const Matrix &M){  
     int r=M.r,c=M.c,i,j,k;
-    if(Is_L(M)){
+    double sum=0.0;
+    // cout<<M<<endl;
+    for(i=0;i<r;i++)
+    {   sum=0.0;
+        for(j=0;j<c;j++)
+        {   
+            if(isnan(M(i,j)))
+            {
+                cerr<<"ERROR:Matrix is almost a singular matrix in LUinv"<<endl;
+                exit(1);
+            }
+            if(i==j&&M(i,j)<eps)
+            {
+                cerr<<"ERROR:Matrix is a singular matrix in LUinv"<<endl;
+                exit(1);
+            }
+        }
+    }                                //solve the inv-problem by using LU-decompose
+    if(Is_L(M))
+    {
         Matrix L_inv(r,c);
         for(i=0;i<r;i++){
             for(j=0;j<c;j++){
@@ -559,22 +626,26 @@ Matrix LUinv(const Matrix &M){
                 }
             }
         }
+        // cout<<U_inv<<endl;
         return Trans(U_inv);
     }
 }
 
 bool Is_L(const Matrix &M){
     int i,j;
-    bool LU=true;
+    double sum=0;
+    bool isL=true;
     for(j=1;j<M.c;j++){
+        sum=0.0;
         for(i=0;i<j;i++){
-            if(M(i,j)>eps)  
-                LU=false;
-                break;
+            sum+=M(i,j);
         }        
-        if(LU==false) break;
+            if(abs(sum)>eps*100){ 
+                isL=false;
+                break;
+            }
     }
-    return LU;
+    return isL;
 }
 
 
@@ -606,3 +677,107 @@ Matrix R_z(double alpha){
     return c;
 }
 
+Matrix Eye(int n)
+{
+    Matrix eye(n,n);
+    for(int i=0;i<n;i++)
+    {
+        eye(i,i)=1;
+    }
+    return eye;
+}
+Matrix operator==(const Matrix &M1,const Matrix &M2)
+{
+    if(M1.r!=M2.r||M1.c!=M2.c)
+    {
+        cerr<<"ERROR:Two matrix in == are different in column ans row"<<endl;
+        exit(1);
+    }
+    Matrix M_Bool(M1.r,M2.c);
+    for(int i=0;i<M1.r;i++)
+        for(int j=0;j<M2.c;j++)
+            {
+                if(abs(M1(i,j)-M2(i,j))<eps)
+                {
+                    M_Bool(i,j)=1.0;
+                }
+            }
+    return M_Bool;
+}
+
+bool IsColFullRank(const Matrix &M)                       //Orthogonal transformation doesn't change the rank of the matrix
+{
+    int i,j;
+    // double sum;
+    Matrix *M1;
+    M1=QR_decompose(M);
+    for(i=0;i<M.r;i++)
+    {   
+        for(j=0;j<M.c;j++)
+        {
+            if(i==j&&M1[1](i,j)<eps)
+            {
+                delete [] M1;
+                return false;
+            }
+            // sum+=M1[1](i,j);
+        }
+    }
+    delete [] M1;
+    return true;
+    //try{
+    // }
+    // catch(exception e)
+    // {
+    //     for(i=0;i<M.r;i++)
+    //     {
+    //         sum=0.0;
+    //         for(j=0;j<M.c;j++)
+    //         {
+    //             sum+=M(i,j);
+    //         }
+    //         if(sum<eps)
+    //         {
+    //             break;
+    //         }
+    //     }
+    //     return i;
+}
+Matrix operator|(const Matrix & M1,const Matrix &M2)
+{try{
+    if(M1.r!=M2.r)
+    {
+        // cerr<<"ERROR:The matrixes that will be emerged are different in rows"<<endl;
+        throw"ERROR:The matrixes that will be emerged are different in rows";
+    }
+}
+catch(const char* e)
+{
+    cerr<<e<<endl;
+    exit(1);
+}
+    Matrix M(M1.r,M2.c+M1.c);
+    for(int i=0;i<M.r;i++)
+    {
+        for(int j=0;j<M.c;j++)
+        {
+            if(j<M1.c)
+            {
+                M(i,j)=M1(i,j);
+            }
+            else
+            {
+                M(i,j)=M2(i,j-M1.c);
+            }
+        }
+    }
+    return M;
+}
+
+// int* Matrix::shape() const
+// {
+//     int *p=new int [2];
+//     p[0]=r;
+//     p[1]=c;
+//     return p;
+// }
