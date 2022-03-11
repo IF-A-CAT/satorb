@@ -1,0 +1,144 @@
+# 697 2170 193680.000 24 
+Gross_error is at the 22th Observation
+
+# 826 2170 197550.000 24 
+Gross_error is at the 22th Observation
+
+# 987 2170 202380.000 24 
+Gross_error is at the 5th Observation
+
+# 988 2170 202410.000 24 
+Gross_error is at the 5th Observation
+
+# 989 2170 202440.000 24 
+Gross_error is at the 9th Observation
+
+# 990 2170 202470.000 24 
+Gross_error is at the 9th Observation
+
+# 991 2170 202500.000 24 
+Gross_error is at the 24th Observation
+
+# 992 2170 202530.000 24 
+Gross_error is at the 24th Observation
+
+# 993 2170 202560.000 24 
+Gross_error is at the 24th Observation
+
+# 994 2170 202590.000 24 
+Gross_error is at the 24th Observation
+
+# 995 2170 202620.000 24 
+Gross_error is at the 24th Observation
+
+# 996 2170 202650.000 24 
+Gross_error is at the 24th Observation
+
+# 997 2170 202680.000 24 
+Gross_error is at the 24th Observation
+
+# 998 2170 202710.000 24 
+Gross_error is at the 24th Observation
+
+# 999 2170 202740.000 24 
+Gross_error is at the 24th Observation
+
+# 1000 2170 202770.000 24 
+Gross_error is at the 24th Observation
+
+# 1001 2170 202800.000 24 
+Gross_error is at the 24th Observation
+
+# 1002 2170 202830.000 24 
+Gross_error is at the 24th Observation
+
+# 1003 2170 202860.000 24 
+Gross_error is at the 24th Observation
+
+# 1004 2170 202890.000 24 
+Gross_error is at the 24th Observation
+
+# 1005 2170 202920.000 24 
+Gross_error is at the 24th Observation
+
+# 1006 2170 202950.000 24 
+Gross_error is at the 24th Observation
+
+# 1007 2170 202980.000 24 
+Gross_error is at the 24th Observation
+
+# 1008 2170 203010.000 24 
+Gross_error is at the 24th Observation
+
+# 1009 2170 203040.000 24 
+Gross_error is at the 24th Observation
+
+# 1010 2170 203070.000 24 
+Gross_error is at the 24th Observation
+
+# 1011 2170 203100.000 24 
+Gross_error is at the 24th Observation
+
+# 1012 2170 203130.000 24 
+Gross_error is at the 24th Observation
+
+# 1013 2170 203160.000 24 
+Gross_error is at the 24th Observation
+
+# 1014 2170 203190.000 24 
+Gross_error is at the 24th Observation
+
+# 1015 2170 203220.000 24 
+Gross_error is at the 24th Observation
+
+# 1016 2170 203250.000 24 
+Gross_error is at the 24th Observation
+
+# 1017 2170 203280.000 23 
+Gross_error is at the 23th Observation
+
+# 1018 2170 203310.000 23 
+Gross_error is at the 23th Observation
+
+# 1019 2170 203340.000 23 
+Gross_error is at the 23th Observation
+
+# 1020 2170 203370.000 23 
+Gross_error is at the 23th Observation
+
+# 1021 2170 203400.000 23 
+Gross_error is at the 23th Observation
+
+# 1094 2170 205590.000 24 
+Gross_error is at the 6th Observation
+
+# 1238 2170 209910.000 24 
+Gross_error is at the 6th Observation
+
+# 1312 2170 212130.000 25 
+Gross_error is at the 6th Observation
+
+# 1650 2170 222270.000 24 
+Gross_error is at the 8th Observation
+
+# 1747 2170 225180.000 26 
+Gross_error is at the 6th Observation
+
+# 1774 2170 225990.000 26 
+Gross_error is at the 7th Observation
+
+# 1775 2170 226020.000 26 
+Gross_error is at the 7th Observation
+
+# 1776 2170 226050.000 26 
+Gross_error is at the 6th Observation
+
+# 1850 2170 228270.000 26 
+Gross_error is at the 7th Observation
+
+# 1853 2170 228360.000 26 
+Gross_error is at the 6th Observation
+
+# 2862 2170 258630.000 25 
+Gross_error is at the 14th Observation
+

@@ -115,6 +115,7 @@ class Matrix
         // int* shape()const;
         int get_row()const{return r;};
         int get_col()const{return c;};
+        void exchange_row(int row1,int row2);
 
     private:
         double **M;

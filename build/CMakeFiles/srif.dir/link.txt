@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -rdynamic CMakeFiles/srif.dir/Srif.cpp.o -o ../bin/srif   -L/home/lcl/bin_ali/Zsj/WorkToSubmit/lib  -Wl,-rpath,/home/lcl/bin_ali/Zsj/WorkToSubmit/lib ../lib/libgnss.so ../lib/libalgorithm.so ../lib/libvecmat.so 

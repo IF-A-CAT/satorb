@@ -1,4 +1,4 @@
-#include"VecMat.h"
+#include"../include/VecMat.h"
 #include<iostream>
 #include<cmath>
 #include<iomanip>
@@ -772,6 +772,22 @@ catch(const char* e)
         }
     }
     return M;
+}
+
+void Matrix::exchange_row(int row1,int row2)
+{
+    if(row1>r||row2>r)
+    {
+        std::cerr<<"ERROR:Row to be exchanged is out of range!"<<std::endl;
+        exit(1);
+    }
+    double temp;
+    for(int i=0;i<c;i++)
+    {
+        temp=M[row1][i];
+        M[row1][i]=M[row2][i];
+        M[row2][i]=temp;
+    }
 }
 
 // int* Matrix::shape() const

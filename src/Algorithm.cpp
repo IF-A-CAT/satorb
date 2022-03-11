@@ -1,6 +1,7 @@
-#include"Algorithm.h"
+#include"../include/Algorithm.h"
 #include<cmath>
-#include"VecMat.h"
+#include"../include/Const.h"
+#include"../include/VecMat.h"
 
 Lsq::Lsq(const Matrix &Pxx_,const Matrix &L,const Matrix &H,int n)
 {
@@ -129,3 +130,35 @@ void Split(std::string str,const char sign,double *data)
     }
 }
 
+bool gross_error_detection(int freedom,double sigma,const Matrix &v,const Matrix &Weight)
+{
+    if(freedom<15)
+    {
+        std::cerr<<"ERROR:Without T that is smaller than 15"<<std::endl;
+        exit(1);
+    }
+
+    if((Trans(v)*Weight*v/(sigma*sigma))(0,0)<chi2inv[freedom-15])
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+void get_coef_mat(const Matrix &obs,const Matrix &ref,double clk,Matrix &H,Matrix &l)
+{
+    int num=obs.get_row();
+    Matrix AuxH(num,4),AuxL(num,1);
+    double S0;
+    for(int i=0;i<num;i++)
+    {
+        S0=sqrt(pow(ref(0,0)-obs(i,0),2)+pow(ref(1,0)-obs(i,1),2)+pow(ref(2,0)-obs(i,2),2))+clk;
+        AuxL(i,0)=obs(i,3)-S0;
+        AuxH(i,0)=(ref(0,0)-obs(i,0))/S0;AuxH(i,1)=(ref(1,0)-obs(i,1))/S0;AuxH(i,2)=(ref(2,0)-obs(i,2))/S0;AuxH(i,3)=1.0;
+    }
+    H=AuxH;
+    l=AuxL;
+}

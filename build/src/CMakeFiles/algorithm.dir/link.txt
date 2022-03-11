@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -shared -Wl,-soname,libalgorithm.so -o ../../lib/libalgorithm.so CMakeFiles/algorithm.dir/Algorithm.cpp.o  -Wl,-rpath,/home/lcl/bin_ali/Zsj/WorkToSubmit/lib ../../lib/libvecmat.so 
