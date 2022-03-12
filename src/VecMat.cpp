@@ -196,6 +196,9 @@ Matrix::Matrix(double *m,int R,int C):r(R),c(C){
 }
 
 Matrix& Matrix::operator=(const double &value){
+    for(int i=0;i<r;i++)
+        delete [] M[i];
+    delete [] M;
     M=new double *[1];
     M[0]=new double [1];
     M[0][0]=value;
@@ -211,6 +214,9 @@ Matrix::~Matrix(){
 }
 
 Matrix& Matrix::operator=(const Vector &V){
+    for(int i=0;i<r;i++)
+        delete [] M[i];
+    delete [] M;
     M=new double*[V.n];
     r=V.n;c=1;
     int i;
@@ -511,12 +517,12 @@ Matrix Cholesky(const Matrix &M)                                //for cholesky-d
 }
 
 
-Matrix* QR_decompose(const Matrix &M){
-    int r=M.r,c=M.c;
+void QR_decompose(const Matrix &M,Matrix &Q,Matrix &R){
+    int r=M.get_row(),c=M.get_col();
     double norm;
     Matrix w(r,1),Aux(r,1),trans(r,r),M1(M);
-    Matrix* QR=new Matrix [2];
-    QR[0]=Eye(r);
+    // Matrix* QR=new Matrix [2];
+    Q=Eye(r);
     for(int i=0;i<r&&i<c;i++){
         Matrix  e(r-i,1);
         for(int j=0;j<r-i;j++){
@@ -553,25 +559,25 @@ Matrix* QR_decompose(const Matrix &M){
             for(int m=0;m<r-i;m++)
                 trans(i+k,m+i)=Aux(k,m);
         }
-        QR[0]=trans*QR[0];
+        Q=trans*Q;
         M1=trans*M1;
     }
-    QR[0]=Trans(QR[0]);
-    QR[1]=M1;
-    return QR;}
+    Q=Trans(Q);
+    R=M1;
+}
 
 Matrix Inv_QR(const Matrix &M){                                 //if you want to solve the inv-problem you'd better us Inv_LU
     if(M.c!=M.r){
         cerr<<"ERROR:Matrix is not a square matrix in Inv_QR"<<endl;
         exit(1);
     }
-    Matrix* QR;
-    QR=QR_decompose(M);
+    Matrix Q,R;
+    QR_decompose(M,Q,R);
     Matrix Inv(M.r,M.c);
-    Inv=LUinv(QR[1]);
+    Inv=LUinv(R);
     // cout<<QR[1]<<'\n'<<Inv<<endl;
-    Inv=Inv*Trans(QR[0]);
-    delete [] QR;
+    Inv=Inv*Trans(Q);
+    // delete [] QR;
     return Inv;
 }
 
@@ -709,21 +715,19 @@ bool IsColFullRank(const Matrix &M)                       //Orthogonal transform
 {
     int i,j;
     // double sum;
-    Matrix *M1;
-    M1=QR_decompose(M);
+    Matrix Q,R;
+    QR_decompose(M,Q,R);
     for(i=0;i<M.r;i++)
     {   
         for(j=0;j<M.c;j++)
         {
-            if(i==j&&M1[1](i,j)<eps)
+            if(i==j&&R(i,j)<eps)
             {
-                delete [] M1;
                 return false;
             }
             // sum+=M1[1](i,j);
         }
     }
-    delete [] M1;
     return true;
     //try{
     // }

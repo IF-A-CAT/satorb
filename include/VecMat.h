@@ -92,7 +92,7 @@ class Matrix
         friend Matrix operator*(const Matrix & M,const Vector &V);
         friend Matrix operator*(const Vector & V,const Matrix &M);
 
-        friend Matrix* QR_decompose(const Matrix &M);
+        friend void QR_decompose(const Matrix &M,Matrix &Q,Matrix &R);
         friend Matrix operator/(const Matrix &M,const double &value);
 
         

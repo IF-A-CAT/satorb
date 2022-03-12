@@ -26,9 +26,9 @@ Lsq::Lsq(const Matrix &Pxx_,const Matrix &L,const Matrix &H,int n)
     }
     B=H;
     // std::cout<<mixed;
-    Matrix *M;
+    Matrix Q,R;
     // std::cout<<mixed<<std::endl;
-    M=QR_decompose(mixed);
+    QR_decompose(mixed,Q,R);
     Matrix temp1(mixed.get_row(),1);
     for(int k=0;k<mixed.get_row();k++)
     {
@@ -42,18 +42,18 @@ Lsq::Lsq(const Matrix &Pxx_,const Matrix &L,const Matrix &H,int n)
         }
     }
     // std::cout<<l<<M[0]<<std::endl;
-    Matrix temp(Trans(M[0])*temp1);
+    Matrix temp(Trans(Q)*temp1);
     Matrix X(n,1);
     double sum;
-    X(n-1,0)=temp(n-1,0)/M[1](n-1,n-1);
+    X(n-1,0)=temp(n-1,0)/R(n-1,n-1);
     for(int i=n-2;i>=0;i--)
     {
         sum=0.0;
         for(int j=i+1;j<n;j++)
         {
-            sum+=M[1](i,j)*X(j,0);
+            sum+=R(i,j)*X(j,0);
         }
-        X(i,0)=(temp(i,0)-sum)/M[1](i,i);
+        X(i,0)=(temp(i,0)-sum)/R(i,i);
     }
     x=X;
     // std::cout<<x-Inv_LU(Trans(mixed)*mixed)*Trans(mixed)*temp1<<std::endl
@@ -69,9 +69,9 @@ Lsq::Lsq(const Matrix &Pxx_,const Matrix &L,const Matrix &H,int n)
     
     // Pxx_post=Inv_LU(Trans(B)*B);
     // std::cout<<M[1].slice(0,n-1,0,n-1)<<std::endl;
-    Pxx_post=LUinv(M[1].slice(0,n-1,0,n-1))*Trans(LUinv(M[1].slice(0,n-1,0,n-1)));
+    Pxx_post=LUinv(R.slice(0,n-1,0,n-1))*Trans(LUinv(R.slice(0,n-1,0,n-1)));
     
-    delete [] M;
+    // delete [] M;
 }
 
 
@@ -79,20 +79,20 @@ Lsq::Lsq(const Matrix &L,const Matrix &H,int n)
 {
     l=L;
     B=H;
-    Matrix *M;
-    M=QR_decompose(B);
-    Matrix temp(Trans(M[0])*l);
+    Matrix Q,R;
+    QR_decompose(B,Q,R);
+    Matrix temp(Trans(Q)*l);
     Matrix X(n,1);
     double sum;
-    X(n-1,0)=temp(n-1,0)/M[1](n-1,n-1);
+    X(n-1,0)=temp(n-1,0)/R(n-1,n-1);
     for(int i=n-2;i>=0;i--)
     {
         sum=0.0;
         for(int j=i+1;j<n;j++)
         {
-            sum+=M[1](i,j)*X(j,0);
+            sum+=R(i,j)*X(j,0);
         }
-        X(i,0)=(temp(i,0)-sum)/M[1](i,i);
+        X(i,0)=(temp(i,0)-sum)/R(i,i);
     }
     x=X;
     v=B*x-l;
@@ -102,9 +102,9 @@ Lsq::Lsq(const Matrix &L,const Matrix &H,int n)
     } 
     corr=sqrt((Trans(v)*v)(0,0)/(l.get_row()-n));
     // std::cout<<M[1]<<std::endl;
-    Pxx_post=LUinv(M[1].slice(0,n-1,0,n-1))*Trans(LUinv(M[1].slice(0,n-1,0,n-1)));
+    Pxx_post=LUinv(R.slice(0,n-1,0,n-1))*Trans(LUinv(R.slice(0,n-1,0,n-1)));
     // std::cout<<LUinv(M[1].slice(0,n-1,0,n-1))<<'\n'<<Pxx_post<<std::endl;
-    delete [] M;
+    // delete [] M;
 }
 
 
@@ -161,4 +161,36 @@ void get_coef_mat(const Matrix &obs,const Matrix &ref,double clk,Matrix &H,Matri
     }
     H=AuxH;
     l=AuxL;
+}
+
+EKF::EKF(int num):epoch(1),time(0.0),n(num){}
+
+void EKF::init(const Matrix &x,const Matrix &P)
+{
+    X=x;
+    Pxx=P;
+}
+
+void EKF::init(int epoch_,double time_ ,const Matrix &x,const Matrix &P)
+{
+    epoch=epoch_;
+    time=time_;
+    X=x;
+    Pxx=P;
+}
+
+void EKF::TimeUpdate(double time_,const Matrix & X_,const Matrix &STM);               //STM: State Tranform Matrix
+{
+    ++epoch;
+    time=time_;
+    X=X_;
+    Pxx=STM*Pxx*Trans(STM);
+}
+
+
+void EKF::MeasUpdate(const Matrix &Z,const Matrix &g,const Matrix Weight_inv,const Matrix &G);         //Z:observations  //G:dz/dx
+{                                                                                                       //g:model value by Propagating
+    K=Pxx*Trans(G)*Inv_LU(Weight_inv+G*Pxx*Trans(G));
+    X=X+K*(Z-g);
+    Pxx=(Eye(n)-K*G)*Pxx;
 }

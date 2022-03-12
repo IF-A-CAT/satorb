@@ -55,4 +55,12 @@ void FindIndepBL(BL *inBL,BL* outBL,int total,int &independent,int Sitenum);
 void FindIndepAmb(DoubleAmb *indoubleamb,DoubleAmb* outdoubleamb,int total,int &independentamb,int Sitenum,int Satnum);
 
 int CompareBL(void *BL1,void *BL2);
+
+void BLH2XYZ(const double* BLH,double* XYZ);
+
+
+void XYZ2BLH(const double* XYZ,double* BLH)                       //CGCS-2000
+
+Matrix TranMatofENU(const double* XYZ)                   //********CGCS-2000**********//  
+
 #endif

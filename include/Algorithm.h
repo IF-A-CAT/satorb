@@ -22,11 +22,40 @@ class Lsq
     Matrix B;                                        //designed matrix
 };
 
+
+class EKF
+{   public:
+    EFK(int n_);
+
+    void init(const Matrix &x,const Matrix &P);
+    void init(int epoch_,double time_ ,const Matrix &x,const Matrix &P);
+
+    void TimeUpdate(double time,const Matrix & X_,const Matrix &STM);               //STM: State Tranform Matrix
+
+    void MeasUpdate(const Matrix &Z,const Matrix &H);
+
+    Matrix get_X()const{return X;};
+    Matrix get_Pxx()const{return Pxx;};
+    double get_time()const {return time;};
+    int  get_epoch()const{return epoch;};
+
+    private:
+    Matrix X;     //state vector
+    Matrix Pxx;   //number of state parameter
+    int epoch ;    
+    int n;
+    double time;
+    
+};
+
+
 void get_coef_mat(const Matrix &obs,const Matrix &ref,double clk,Matrix &H,Matrix &L);
 
 bool gross_error_detection(int freedom,double sigma,const Matrix &v,const Matrix &Weight);
 
 void Split(std::string str,const char sign,double * data); 
+
+
 
 
 #endif

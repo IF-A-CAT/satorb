@@ -1,4 +1,5 @@
 #include"../include/GNSS.h"
+#include"../include/Const.h"
 #include"../include/VecMat.h"
 #include<iostream>
 #include<vector>
@@ -126,4 +127,52 @@ void FindIndepAmb(DoubleAmb *inDoubleAmb,DoubleAmb* outDoubleAmb,int total,int &
         outDoubleAmb[i].site_id[0]=outDA[i].site_id[0];
         outDoubleAmb[i].site_id[1]=outDA[i].site_id[1];
     }
+}
+
+void BLH2XYZ(const double* BLH,double* XYZ)
+{
+    double a=6378137;
+    double b=6356752.31414;
+    double N,f,e;
+    e=sqrt(a*a-b*b)/a;
+    N=a/sqrt(1-e*e*sin(BLH[0])*sin(BLH[0]));
+    XYZ[0]=(N+BLH[2])*cos(BLH[0])*cos(BLH[1]);
+    XYZ[1]=(N+BLH[2])*cos(BLH[0])*sin(BLH[1]);
+    XYZ[2]=(N*(1-e*e)+BLH[2])*sin(BLH[0]);
+}
+
+void XYZ2BLH(const double* XYZ,double* BLH)                       
+{
+    double a=6378137;
+    double b= 6356752.31414;
+    double e=sqrt(a*a-b*b)/a;
+    double TanB=0,Btemp=1;
+    while(abs(Btemp-TanB)>1e-6)
+    {
+        Btemp=TanB;
+        TanB=(1/sqrt(XYZ[0]*XYZ[0]+XYZ[1]*XYZ[1]))*(XYZ[2]+(a*e*e*TanB)/sqrt(1+TanB*TanB-e*e*TanB*TanB));
+    }
+    BLH[1]=atan(XYZ[1]/XYZ[0]);
+    if(XYZ[0]>=0)
+    {
+        if(XYZ[1]<0)
+        {
+            BLH[1]=2*pi+BLH[1];
+        }
+    }
+    else if(XYZ[0]<0)
+    {
+            BLH[1]=BLH[1]+pi;
+    }
+    BLH[0]=atan(TanB);
+    BLH[2]=sqrt(XYZ[0]*XYZ[0]+XYZ[1]*XYZ[1])/cos(BLH[0])-a/sqrt(1-e*e*sin(BLH[0])*sin(BLH[0]));
+}
+Matrix TranMatofENU(const double* XYZ)                   //********CGCS-2000**********//  
+{
+    Matrix Tran(3,3);
+    double BLH[3];
+    XYZ2BLH(XYZ,BLH);
+    Tran=R_z(BLH[1]+pi/2);
+    Tran=R_x(pi/2-BLH[0])*Tran;
+    return Tran;
 }
