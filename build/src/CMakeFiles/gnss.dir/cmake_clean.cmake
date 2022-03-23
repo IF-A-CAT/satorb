@@ -2,7 +2,6 @@ file(REMOVE_RECURSE
   "../../lib/libgnss.pdb"
   "../../lib/libgnss.so"
   "CMakeFiles/gnss.dir/GNSS.cpp.o"
-  "CMakeFiles/gnss.dir/GNSS.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

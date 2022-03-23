@@ -2,7 +2,6 @@ file(REMOVE_RECURSE
   "../../lib/libalgorithm.pdb"
   "../../lib/libalgorithm.so"
   "CMakeFiles/algorithm.dir/Algorithm.cpp.o"
-  "CMakeFiles/algorithm.dir/Algorithm.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

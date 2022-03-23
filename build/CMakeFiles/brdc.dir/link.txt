@@ -1,0 +1,1 @@
+/usr/bin/c++  -g  -rdynamic CMakeFiles/brdc.dir/Brdc.cpp.o  -o ../bin/brdc   -L/root/Zsj/SelfFile/WorkToSubmit/lib  -Wl,-rpath,/root/Zsj/SelfFile/WorkToSubmit/lib ../lib/libgnss.so ../lib/libvecmat.so 

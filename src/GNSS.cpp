@@ -2,8 +2,9 @@
 #include"../include/Const.h"
 #include"../include/VecMat.h"
 #include<iostream>
+#include<fstream>
 #include<vector>
-#include<string>
+#include<string.h>
 
 bool CheckIndepentBL(Matrix &IndependentMat,const BL &newline)                    //Site Index from 1
 {
@@ -147,7 +148,7 @@ void XYZ2BLH(const double* XYZ,double* BLH)
     double b= 6356752.31414;
     double e=sqrt(a*a-b*b)/a;
     double TanB=0,Btemp=1;
-    while(abs(Btemp-TanB)>1e-6)
+    while(fabs(Btemp-TanB)>1e-6)
     {
         Btemp=TanB;
         TanB=(1/sqrt(XYZ[0]*XYZ[0]+XYZ[1]*XYZ[1]))*(XYZ[2]+(a*e*e*TanB)/sqrt(1+TanB*TanB-e*e*TanB*TanB));
@@ -175,4 +176,227 @@ Matrix TranMatofENU(const double* XYZ)                   //********CGCS-2000****
     Tran=R_z(BLH[1]+pi/2);
     Tran=R_x(pi/2-BLH[0])*Tran;
     return Tran;
+}
+
+EPHbrdc::EPHbrdc()
+{
+    _WaveI=new double [2];
+    _WaveR=new double [2];
+    _WaveU=new double [2];
+}
+EPHbrdc::~EPHbrdc()
+{
+    delete [] _WaveI;
+    delete [] _WaveU;
+    delete [] _WaveR;
+}
+void EPHbrdc::Init(const double* array,int n)
+{
+    if(n==6)
+    {
+        _M0=array[0];
+        _e=array[1];
+        _SqrtA=array[2];
+        _i=array[3];
+        _omega=array[4];
+        _Omega=array[5];
+    }
+    else if (n==16)
+    {
+        _M0=array[0];
+        _e=array[1];
+        _SqrtA=array[2];
+        _i=array[3];
+        _omega=array[4];
+        _Omega=array[5];
+        _DeltaN=array[6];
+        _DeltaOmega=array[7];
+        _DeltaI=array[8];
+        _WaveU[0]=array[9];
+        _WaveU[1]=array[10];
+        _WaveI[0]=array[11];
+        _WaveI[1]=array[12];
+        _WaveR[0]=array[13];
+        _WaveR[1]=array[14];
+        _gt=array[15];
+    }
+    else{
+        std::cerr<<"ERROR:EPHbrdc INPUT fail ! \n";
+        exit(1);
+    }
+}
+//newton iteration
+void EcceAno(double M,double e,double &E)
+{
+    double aux,temp,deriv,deltaE=1.0;
+    E=M;
+    while(fabs(deltaE)>1e-12)
+    {
+    aux=E;
+    temp=E-e*sin(E)-M;
+    deriv=1-e*cos(E);
+    E=E-temp/deriv;
+    deltaE=aux-E;
+    }
+}
+
+void TrueAno(double e,double E,double &f)
+{
+    double temp1,temp2;
+    temp1=cos(E)-e;
+    temp2=sqrt(1-e*e)*sin(E);
+    if(temp1>0&&temp2>=0)
+    {
+        f=atan(temp2/temp1);
+    }
+    else if(temp1<0)
+    {
+        f=atan(temp2/temp1)+pi;
+    }
+    else if(temp1>0&&temp2<0)
+    {
+        f=atan(temp2/temp1)+2*pi;
+    }
+}
+
+void EPHbrdc::CalPos(double gpstime,double* XY)
+{
+    double M,a,E,f,u,r;
+    double delta_t=gpstime-_gt;
+   //get f/u
+    M=_M0+(sqrt(GM)/pow(_SqrtA,3)+_DeltaN)*(gpstime-_gt);
+    EcceAno(M,_e,E);
+    TrueAno(_e,E,f);
+    
+    u=_omega+f;
+    
+    
+    //get r
+    r=_SqrtA*_SqrtA*(1-_e*cos(E));
+    
+    //correction r
+    r=r+_WaveR[0]*cos(2*u)+_WaveR[1]*sin(2*u);
+
+    //calculate XY
+    //correction u
+    u=u+_WaveU[0]*cos(2*u)+_WaveU[1]*sin(2*u);
+    XY[0]=r*cos(u);
+    XY[1]=r*sin(u);
+}
+
+void EPHbrdc::Pos2WGS84(double gpstime,double *XYZ)
+{
+    double M,i,E,f,L,PosXY[2],u;
+    CalPos(gpstime,PosXY);
+    M=_M0+(sqrt(GM)/pow(_SqrtA,3)+_DeltaN)*(gpstime-_gt);
+    EcceAno(M,_e,E);
+    TrueAno(_e,E,f);
+    u=_omega+f;
+    
+    //correction i
+    i = _i + _DeltaI * ( gpstime - _gt ) + _WaveI[0] * cos(2*u) + _WaveI[1] * sin(2*u);
+    //calculate longtitute
+    L=_Omega+(_DeltaOmega-w) * gpstime -_DeltaOmega * _gt ;
+
+    //correction u
+    // u=u+_WaveU[0]*cos(2*u)+_WaveU[1]*sin(2*u);
+    //transform matrix
+    Matrix rotate,Pos(3,1),WGSPos;
+    rotate=R_x(-i);
+    rotate= R_z(-L) * rotate ;
+    // std::cout<<rotate;
+    //position of satellite in plane of satellite
+    Pos(0,0)=PosXY[0];
+    Pos(1,0)=PosXY[1];
+    Pos(2,0)=0.0;
+    
+    //WGS-84 location 
+    WGSPos=rotate * Pos;
+
+    // std::cout<<WGSPos;
+    XYZ[0]=WGSPos(0,0);
+    XYZ[1]=WGSPos(1,0);
+    XYZ[2]=WGSPos(2,0);
+}
+
+void EPHbrdc::Init(std::string str)
+{
+    int prn;
+    double data[31],ephpara[16];
+    BrdcReader(str,prn,data);
+    GetBrdcPara(data,ephpara);
+    Init(ephpara,16);
+    _prn=prn;
+}
+
+void BrdcReader(std::string filename, int &PRN,double* data)
+{
+    std::string str;
+    int leapsec;
+    std::ifstream loader(filename,std::ios::in);
+    //HEADER READER
+    while(getline(loader,str))
+    {
+        const char* str_copy=str.c_str();
+        if( NULL != strstr(str_copy,"LEAP SECONDS"))
+        {
+            leapsec = atoi(str.substr(0,60).c_str()); 
+        }
+        else if(NULL != strstr(str_copy,"END OF HEADER"))
+        {
+            break;
+        }
+    }
+    //DATA READER
+    while(getline(loader,str))
+    {
+        PRN=atoi(str.substr(0,3).c_str());
+        int year,month,day,hour,min;
+        float sec;
+        // double tempdata[4]={0.0};
+
+        year=atoi(str.substr(3,2).c_str());
+        month=atoi(str.substr(6,2).c_str());
+        day=atoi(str.substr(9,2).c_str());
+        hour=atoi(str.substr(12,2).c_str());
+        min=atoi(str.substr(15,2).c_str());
+        sec=atof(str.substr(18,4).c_str());
+/**************time read over******************/
+        for(int i=0;i<3;i++)
+        {
+            data[i]=atof(str.substr(3+19+i*19,19).c_str());
+        }
+        for(int i=0;i<7;i++)
+        {
+            getline(loader,str);
+            for(int j=0;j<4;j++)
+            {
+                // std::cout<<str.substr(3+j*19,19)<<"\n";
+                data[3+j+i*4]=atof(str.substr(3+j*19,19).c_str());
+            }
+        }
+        
+        break;
+    }
+}
+
+void GetBrdcPara(double *data,double *ephpara)
+{
+    int compasate=4;
+    ephpara[0]=data[compasate+2];
+    ephpara[1]=data[compasate+4];
+    ephpara[2]=data[compasate+6];
+    ephpara[3]=data[compasate+11];
+    ephpara[4]=data[compasate+13];
+    ephpara[5]=data[compasate+9];
+    ephpara[6]=data[compasate+1];
+    ephpara[7]=data[compasate+14];
+    ephpara[8]=data[compasate+15];
+    ephpara[9]=data[compasate+3];
+    ephpara[10]=data[compasate+5];
+    ephpara[11]=data[compasate+8];
+    ephpara[12]=data[compasate+10];
+    ephpara[13]=data[compasate+12];
+    ephpara[14]=data[compasate+0];
+    ephpara[15]=data[compasate+7];
 }

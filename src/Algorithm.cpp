@@ -179,7 +179,7 @@ void EKF::init(int epoch_,double time_ ,const Matrix &x,const Matrix &P)
     Pxx=P;
 }
 
-void EKF::TimeUpdate(double time_,const Matrix & X_,const Matrix &STM);               //STM: State Tranform Matrix
+void EKF::TimeUpdate(double time_,const Matrix & X_,const Matrix &STM)              //STM: State Tranform Matrix
 {
     ++epoch;
     time=time_;
@@ -188,8 +188,9 @@ void EKF::TimeUpdate(double time_,const Matrix & X_,const Matrix &STM);         
 }
 
 
-void EKF::MeasUpdate(const Matrix &Z,const Matrix &g,const Matrix Weight_inv,const Matrix &G);         //Z:observations  //G:dz/dx
-{                                                                                                       //g:model value by Propagating
+void EKF::MeasUpdate(const Matrix &Z,const Matrix &g,const Matrix Weight_inv,const Matrix &G)        //Z:observations  //G:dz/dx
+{   
+    Matrix K;                                                                                              //g:model value by Propagating
     K=Pxx*Trans(G)*Inv_LU(Weight_inv+G*Pxx*Trans(G));
     X=X+K*(Z-g);
     Pxx=(Eye(n)-K*G)*Pxx;

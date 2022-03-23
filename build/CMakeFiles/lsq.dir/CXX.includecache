@@ -1,0 +1,46 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/Zsj/SelfFile/WorkToSubmit/Lsq.cpp
+iostream
+-
+fstream
+-
+cmath
+-
+./include/VecMat.h
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+./include/Algorithm.h
+/root/Zsj/SelfFile/WorkToSubmit/include/Algorithm.h
+string
+-
+./include/Const.h
+/root/Zsj/SelfFile/WorkToSubmit/include/Const.h
+./include/GNSS.h
+/root/Zsj/SelfFile/WorkToSubmit/include/GNSS.h
+iomanip
+-
+ctime
+-
+
+/root/Zsj/SelfFile/WorkToSubmit/include/Algorithm.h
+VecMat.h
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+
+/root/Zsj/SelfFile/WorkToSubmit/include/Const.h
+
+/root/Zsj/SelfFile/WorkToSubmit/include/GNSS.h
+cmath
+-
+VecMat.h
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+iostream
+-
+

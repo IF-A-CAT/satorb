@@ -13,11 +13,15 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 
 file(GLOB SRC_LSQ "./L*.cpp")
+file(GLOB SRC_BRDC "./src/*.cpp")
 
 add_executable(lsq ${SRC_LSQ})
 
+add_executable(brdc Brdc.cpp)
+
 target_link_libraries(lsq vecmat gnss algorithm)
 
+target_link_libraries(brdc gnss)
 set(CMAKE_BUILD_TYPE "Debug")
 
 add_executable(srif "./Srif.cpp")

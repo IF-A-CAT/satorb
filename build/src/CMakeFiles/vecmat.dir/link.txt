@@ -1,1 +1,1 @@
-/usr/bin/c++ -fPIC -shared -Wl,-soname,libvecmat.so -o ../../lib/libvecmat.so CMakeFiles/vecmat.dir/VecMat.cpp.o 
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libvecmat.so -o ../../lib/libvecmat.so CMakeFiles/vecmat.dir/VecMat.cpp.o 

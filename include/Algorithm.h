@@ -25,14 +25,14 @@ class Lsq
 
 class EKF
 {   public:
-    EFK(int n_);
+    EKF(int n_);
 
     void init(const Matrix &x,const Matrix &P);
     void init(int epoch_,double time_ ,const Matrix &x,const Matrix &P);
 
     void TimeUpdate(double time,const Matrix & X_,const Matrix &STM);               //STM: State Tranform Matrix
 
-    void MeasUpdate(const Matrix &Z,const Matrix &H);
+    void MeasUpdate(const Matrix &Z,const Matrix &g,const Matrix Weight_inv,const Matrix &G);
 
     Matrix get_X()const{return X;};
     Matrix get_Pxx()const{return Pxx;};

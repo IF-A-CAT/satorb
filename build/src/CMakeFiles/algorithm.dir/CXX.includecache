@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/root/Zsj/SelfFile/WorkToSubmit/include/Algorithm.h
+VecMat.h
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+
+/root/Zsj/SelfFile/WorkToSubmit/include/Const.h
+
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+iostream
+-
+
+/root/Zsj/SelfFile/WorkToSubmit/src/Algorithm.cpp
+../include/Algorithm.h
+/root/Zsj/SelfFile/WorkToSubmit/include/Algorithm.h
+cmath
+-
+../include/Const.h
+/root/Zsj/SelfFile/WorkToSubmit/include/Const.h
+../include/VecMat.h
+/root/Zsj/SelfFile/WorkToSubmit/include/VecMat.h
+

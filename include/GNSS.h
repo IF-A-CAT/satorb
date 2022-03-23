@@ -45,6 +45,36 @@ struct DoubleAmb
     /* data */
 };
 
+class EPHbrdc
+{
+    public:
+    EPHbrdc();
+    ~EPHbrdc();
+    void Init(const double* array,int n);
+    void Init(std::string str);
+    void CalPos(double gpstime,double* XY);
+
+    void Pos2WGS84(double gpstime,double *XYZ);
+
+    private:
+    int _prn;
+    //轨道根数
+    double _gt;
+    double _Omega;
+    double _M0;
+    double _e;
+    double _SqrtA;
+    double _omega;
+    double _i;
+    //轨道摄动参数
+    double _DeltaN;
+    double _DeltaOmega;
+    double _DeltaI;
+    double* _WaveU;
+    double* _WaveI;
+    double* _WaveR;
+};
+
 
 bool CheckIndepentBL(Matrix &IndependentMat,const BL &newline);
 
@@ -59,8 +89,16 @@ int CompareBL(void *BL1,void *BL2);
 void BLH2XYZ(const double* BLH,double* XYZ);
 
 
-void XYZ2BLH(const double* XYZ,double* BLH)                       //CGCS-2000
+void XYZ2BLH(const double* XYZ,double* BLH);                      //CGCS-2000
 
-Matrix TranMatofENU(const double* XYZ)                   //********CGCS-2000**********//  
+Matrix TranMatofENU(const double* XYZ);                //********CGCS-2000**********//  
+
+void EcceAno(double M,double e,double &b);
+void TrueAno(double e,double E,double &f);
+
+void BrdcReader(std::string filename, int &PRN,double* data);
+void BrdcReader(std::string filename,int *PRN ,double** data);
+
+void GetBrdcPara(double *data1,double *ephpara);
 
 #endif
